@@ -1,9 +1,6 @@
-from rhino3dm import *
-import compute_rhino3d.Util
 import compute_rhino3d.Brep
 import rhino3dm
 import requests
-import pprint
 import base64
 import json
 
@@ -31,6 +28,39 @@ response = requests.post(post_url, json={
                     }
                 ]
             }
+        },
+{
+            "ParamName": "RH_IN:Count",
+            "InnerTree": {
+                "{ 0; }": [
+                    {
+                        "type": "System.Integer",
+                        "data": "80"
+                    }
+                ]
+            }
+        },
+{
+            "ParamName": "RH_IN:Outer",
+            "InnerTree": {
+                "{ 0; }": [
+                    {
+                        "type": "System.Double",
+                        "data": "40.0"
+                    }
+                ]
+            }
+        },
+{
+            "ParamName": "RH_IN:Inner",
+            "InnerTree": {
+                "{ 0; }": [
+                    {
+                        "type": "System.Double",
+                        "data": "20.0"
+                    }
+                ]
+            }
         }
     ]
 })
@@ -40,6 +70,7 @@ res = json.loads(res)
 
 values = res["values"]
 
+model = rhino3dm.File3dm()
 for val in values:
     paramName = val['ParamName']
     print(paramName)
@@ -49,4 +80,5 @@ for val in values:
         for innerVal in innerVals:
             data = json.loads(innerVal['data'])
             geo = rhino3dm.CommonObject.Decode(data)
-            pprint.pprint(geo)
+            model.Objects.Add(geo)
+model.Write("./voronoi.3dm")
